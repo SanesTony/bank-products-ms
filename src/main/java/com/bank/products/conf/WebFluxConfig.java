@@ -12,8 +12,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 @EnableWebFlux
-public class WebFluxConfig implements WebFluxConfigurer
-{
+public class WebFluxConfig implements WebFluxConfigurer {
+	
 	Logger logger = LoggerFactory.getLogger(WebFluxConfig.class);
 
 	@Bean
