@@ -14,8 +14,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
+import com.bank.products.client.Transaction;
 import com.bank.products.document.Credit;
 import com.bank.products.document.Debit;
+import com.bank.products.document.Product;
+import com.bank.products.document.VirtualWallet;
 import com.bank.products.service.ProductService;
 
 @Configuration
@@ -150,6 +153,90 @@ public class ProductFunctionalConfig {
 		return route(DELETE("/api/v1/products/debits/{id}"),
 				req -> ok().body(
 						productService.getDebitByProductId(req.pathVariable("id")).flatMap(Debit -> productService.deleteDebit(Debit)), Void.class
+						));
+	}
+	
+	//****************************************Product: VirtualWallet********************************************//
+	
+	@Bean
+	RouterFunction<ServerResponse> getVirtualWallets(){
+		return route(GET("/api/v1/products/wallets"),
+				req -> ok().body(
+						productService.getVirtualWallets(), VirtualWallet.class
+						));
+	}
+	
+	@Bean
+	RouterFunction<ServerResponse> getVirtualWalletByProductId(){
+		return route(GET("/api/v1/products/wallets/ids/{id}"),
+				req -> ok().body( 
+						productService.getVirtualWalletByProductId("id"), VirtualWallet.class
+						));
+	}
+	
+	@Bean
+	RouterFunction<ServerResponse> getVirtualWalletsByProductType(){
+		return route(GET("/api/v1/products/wallets/types/{productType}"),
+				req -> ok().body( 
+						productService.getVirtualWalletsProductType("productType"), VirtualWallet.class
+						));
+	}
+	
+	@Bean
+	RouterFunction<ServerResponse> getVirtualWalletsByProductName(){
+		return route(GET("/api/v1/products/wallets/names/{productName}"), 
+				req -> ok().body( 
+						productService.getVirtualWalletsByProductName("productName"), VirtualWallet.class
+						));
+	}
+	
+	@Bean
+	RouterFunction<ServerResponse> getVirtualWalletsByCustomerId(){
+		return route(GET("/api/v1/products/wallets/customers/{customerId}"),
+				req -> ok().body( 
+						productService.getVirtualWalletsByCustomerId("customerId"), VirtualWallet.class
+						));
+	}
+	
+	@Bean
+	RouterFunction<ServerResponse> addVirtualWallet(){
+		return route(POST("/api/v1/products/wallets"), 
+				req -> ok().body( 
+						fromPublisher(req.bodyToMono(VirtualWallet.class).flatMap(productService::addVirtualWallet), VirtualWallet.class)
+						));
+	}
+	
+	@Bean
+	RouterFunction<ServerResponse> editVirtualWallet(){
+		return route(PUT("/api/v1/products/wallets"),
+				req -> ok().body(
+						fromPublisher(req.bodyToMono(VirtualWallet.class).flatMap(productService::editVirtualWallet), VirtualWallet.class)
+						));
+	}
+	
+	@Bean
+	RouterFunction<ServerResponse> deletedVirtualWallet(){
+		return route(DELETE("/api/v1/products/wallets/{id}"),
+				req -> ok().body(
+						productService.getVirtualWalletByProductId(req.pathVariable("id")).flatMap(VirtualWallet -> productService.deleteVirtualWallet(VirtualWallet)),Void.class
+						));
+	}
+	
+	//***********************************Reports*****************************************//
+	
+	@Bean
+	RouterFunction<ServerResponse> getProductsByCustomerId(){
+		return route(GET("/api/v1/products/customers/{id}"),
+				req -> ok().body(
+						productService.getProductsByCustomerId("id"), Product.class
+						));
+	}
+	
+	@Bean
+	RouterFunction<ServerResponse> getTransactionsByCustomerId(){
+		return route(GET("/api/v1/products/customers/{id}/transactions"),
+				req -> ok().body(
+						productService.getTransactionsByCustomerId("id"), Transaction.class
 						));
 	}
 }
